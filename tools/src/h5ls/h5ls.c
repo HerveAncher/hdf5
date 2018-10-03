@@ -28,6 +28,11 @@
 #include "h5tools_dump.h"
 #include "h5trav.h"
 
+#if defined(H5_HAVE_GETCONSOLESCREENBUFFERINFO) && defined(__MINGW32__)
+#include <windows.h>
+#include <wincon.h>
+#endif
+
 /* Name of tool */
 #define PROGRAMNAME "h5ls"
 

@@ -1135,7 +1135,11 @@ typedef off_t               h5_stat_size_t;
     #define HDmemset(X,C,Z)    memset(X,C,Z)
 #endif /* HDmemset */
 #ifndef HDmkdir
-    #define HDmkdir(S,M)    mkdir(S,M)
+    #if defined __MINGW32__
+        #define HDmkdir(S,M)    mkdir(S)
+    #else
+        #define HDmkdir(S,M)    mkdir(S,M)
+    #endif
 #endif /* HDmkdir */
 #ifndef HDmkfifo
     #define HDmkfifo(S,M)    mkfifo(S,M)
@@ -1279,7 +1283,11 @@ typedef off_t               h5_stat_size_t;
     #define HDsetbuf(F,S)    setbuf(F,S)
 #endif /* HDsetbuf */
 #ifndef HDsetenv
-    #define HDsetenv(N,V,O)    setenv(N,V,O)
+    #if defined __MINGW32__
+        #define HDsetenv(N,V,O)    Wsetenv(N,V,O)
+    #else
+        #define HDsetenv(N,V,O)    setenv(N,V,O)
+    #endif
 #endif /* HDsetenv */
 #ifndef HDsetgid
     #define HDsetgid(G)    setgid(G)

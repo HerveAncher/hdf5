@@ -765,6 +765,44 @@ done:
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5_make_time() */
 
+#if defined(H5_HAVE_WIN32_API) || defined(__MINGW32__)
+
+/*-------------------------------------------------------------------------
+ * Function:    Wsetenv
+ *
+ * Purpose:     Wrapper function for setenv on Windows systems.
+ *              Interestingly, getenv *is* available in the Windows
+ *              POSIX layer, just not setenv.
+ *
+ * Return:      Success:    0
+ *              Failure:    non-zero error code
+ *
+ * Programmer:  Dana Robinson
+ *              February 2016
+ *
+ *-------------------------------------------------------------------------
+ */
+int
+Wsetenv(const char *name, const char *value, int overwrite)
+{
+    size_t bufsize;
+    errno_t err;
+
+    /* If we're not overwriting, check if the environment variable exists.
+     * If it does (i.e.: the required buffer size to store the variable's
+     * value is non-zero), then return an error code.
+     */
+    if(!overwrite) {
+        err = getenv_s(&bufsize, NULL, 0, name);
+        if (err || bufsize)
+            return (int)err;
+    } /* end if */
+
+    return (int)_putenv_s(name, value);
+} /* end Wsetenv() */
+
+#endif // H5_HAVE_WIN32_API || __MINGW32__
+
 #ifdef H5_HAVE_WIN32_API
 
 /* Offset between 1/1/1601 and 1/1/1970 in 100 nanosecond units */
@@ -821,41 +859,6 @@ Wgettimeofday(struct timeval *tv, struct timezone *tz)
      Do not set errno on error.  */
   return 0;
 } /* end Wgettimeofday() */
-
-
-/*-------------------------------------------------------------------------
- * Function:    Wsetenv
- *
- * Purpose:     Wrapper function for setenv on Windows systems.
- *              Interestingly, getenv *is* available in the Windows
- *              POSIX layer, just not setenv.
- *
- * Return:      Success:    0
- *              Failure:    non-zero error code
- *
- * Programmer:  Dana Robinson
- *              February 2016
- *
- *-------------------------------------------------------------------------
- */
-int
-Wsetenv(const char *name, const char *value, int overwrite)
-{
-    size_t bufsize;
-    errno_t err;
-
-    /* If we're not overwriting, check if the environment variable exists.
-     * If it does (i.e.: the required buffer size to store the variable's
-     * value is non-zero), then return an error code.
-     */
-    if(!overwrite) {
-        err = getenv_s(&bufsize, NULL, 0, name);
-        if (err || bufsize)
-            return (int)err;
-    } /* end if */
-
-    return (int)_putenv_s(name, value);
-} /* end Wsetenv() */
 
 #ifdef H5_HAVE_WINSOCK2_H
 #pragma comment(lib, "advapi32.lib")
