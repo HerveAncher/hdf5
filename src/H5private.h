@@ -853,7 +853,11 @@ H5_DLL H5_ATTR_CONST int Nflock(int fd, int operation);
     #elif defined(H5_HAVE_FCNTL)
         #define HDflock(F,L)    Pflock(F,L)
     #else
-        #define HDflock(F,L)    Nflock(F,L)
+        #if defined __MINGW32__
+            #define HDflock(F,L)    Wflock(F,L)
+        #else
+            #define HDflock(F,L)    Nflock(F,L)
+        #endif /* H5_HAVE_FLOCK */
     #endif /* H5_HAVE_FLOCK */
 #endif /* HDflock */
 #ifndef HDfloor

@@ -45,7 +45,10 @@ src/H5version.h
 
 /.classpath
 
-# Compilation objects
+# Compilation objects and directories
 **/*.o
 **/*.lo
+**/*.la
 **/*.exe
+**/.deps/
+**/.libs/
